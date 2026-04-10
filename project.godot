@@ -45,7 +45,7 @@ window/size/viewport_width=1680
 window/size/viewport_height=940
 window/size/mode=2
 window/stretch/mode="viewport"
-window/stretch/aspect="keep_height"
+window/stretch/aspect="keep_width"
 
 [input]
 
@@ -79,3 +79,4 @@ right={
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0, 0, 0, 1)
