@@ -1,11 +1,12 @@
 ## Developed by Camilo DelCódigo
 ##
-## Controls grid-based player movement with a short input repeat delay.
+## Controls the player actor during its turn in the turn-based loop.
 ##
 ## The player moves exactly one tile per accepted input using the tile size
 ## defined in Config. Movement into solid map tiles is blocked through the
 ## shared Map instance. When both axes are pressed, horizontal input is
-## processed before vertical input.
+## processed before vertical input. Any directional input consumes the player's
+## turn, even if the destination tile is blocked.
 extends Node2D
 class_name Player
 
@@ -15,10 +16,14 @@ var _key_delay: float = 0
 ## Time in seconds between accepted movement inputs while a direction is held.
 @export var key_delay_seconds: float = 0.05
 
+## Registers the player as a turn actor when the node enters the scene.
+func _ready() -> void:
+	TurnsManager.instance.register_actor(self)
+
 ## Attempts to move the player by one grid cell.
 ##
-## Returns true when movement is applied or the destination tile is solid. 
-## Returns false when there is no input.
+## Returns true when directional input is present, including blocked movement
+## attempts that still consume the turn. Returns false when there is no input.
 func process_movement() -> bool:
 	var hor: float = Input.get_axis("left", "right")
 	var ver: float = Input.get_axis("up", "down")
@@ -39,11 +44,15 @@ func process_movement() -> bool:
 ## Updates the movement cooldown and processes movement when input is allowed.
 ##
 ## The cooldown prevents held input from advancing more than one tile per
-## configured delay interval.
+## configured delay interval. The player can only act during its assigned turn,
+## and a successful input attempt advances the turn order.
 func _process(delta: float) -> void:
 	if (_key_delay > 0):
 		_key_delay -= delta
 		return
 	
+	if not TurnsManager.instance.is_my_turn(self):
+		return
+	
 	if process_movement():
-		pass
+		TurnsManager.instance.next_turn()

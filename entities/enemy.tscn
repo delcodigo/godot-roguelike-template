@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://cxx2qmi7jtaxb"]
+
+[ext_resource type="Texture2D" uid="uid://flmdpy40od3k" path="res://sprites/spritesheet.png" id="1_p7g5j"]
+[ext_resource type="Script" uid="uid://by48lv1ukrym7" path="res://src/enemy.gd" id="1_pqhw6"]
+
+[node name="Enemy" type="Node2D" unique_id=1785776584]
+script = ExtResource("1_pqhw6")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=730025694]
+texture_filter = 1
+texture = ExtResource("1_p7g5j")
+offset = Vector2(7, 10)
+region_enabled = true
+region_rect = Rect2(266, 0, 14, 20)
