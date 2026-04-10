@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://fc63bmvwcejh"]
+
+[ext_resource type="Script" uid="uid://cr85rjevnj02j" path="res://src/player.gd" id="1_b0kkn"]
+[ext_resource type="Texture2D" uid="uid://flmdpy40od3k" path="res://sprites/spritesheet.png" id="1_merdl"]
+
+[node name="Player" type="Node2D" unique_id=1608765931]
+script = ExtResource("1_b0kkn")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1190434227]
+texture_filter = 1
+texture = ExtResource("1_merdl")
+offset = Vector2(7, 10)
+region_enabled = true
+region_rect = Rect2(490, 40, 14, 20)
