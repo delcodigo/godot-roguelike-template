@@ -1,30 +1,38 @@
 ## Developed by Camilo DelCódigo
 ##
-## Controls the player actor during its turn in the turn-based loop.
+## Turn-based player controller for keyboard and click-to-move input.
 ##
-## The player moves exactly one tile per accepted input using the tile size
-## defined in Config. Movement into solid map tiles is blocked through the
-## shared Map instance. The player can move horizontally, vertically, or diagonally
-## using the corresponding input actions. Diagonal movement requires that all three involved 
-## tiles (horizontal, vertical, and diagonal destination) are not solid. Any directional 
-## input, including blocked movement attempts, consumes the player's turn and triggers a movement cooldown.
+## The player only acts on its assigned turn. Keyboard input attempts a single
+## tile step immediately, while left-click movement stores an A* path and then
+## advances along that path one tile per player turn until the queue is empty.
 extends Node2D
 class_name Player
 
-## Remaining cooldown before another movement input can be accepted.
 var _key_delay: float = 0
+var _path: Array[Vector2] = []
 
-## Time in seconds between accepted movement inputs while a direction is held.
-@export var key_delay_seconds: float = 0.05
+@export var key_delay_seconds: float = 0.05 # Time after a keypress during which input is ignored, to prevent accidental double moves.
 
-## Registers the player as a turn actor when the node enters the scene.
 func _ready() -> void:
 	TurnsManager.instance.register_actor(self)
 
-## Attempts to move the player by one grid cell.
-##
-## Returns true when directional input is present, including blocked movement
-## attempts that still consume the turn. Returns false when there is no input.
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		var mouse_event: InputEventMouseButton = event as InputEventMouseButton
+		if mouse_event.pressed and mouse_event.button_index == MOUSE_BUTTON_LEFT:
+			var target: Vector2 = get_canvas_transform().affine_inverse() * mouse_event.position
+			var path: Array[Vector2] = Map.instance.pathfinding.find_path(position, target)
+			if path.size() > 1:
+				_path = path.slice(1)
+
+func process_path() -> void:
+	if _path.is_empty():
+		return
+
+	position = _path[0]
+	_path.remove_at(0)
+	_key_delay = key_delay_seconds
+
 func process_movement() -> bool:
 	var hor: float = Input.get_axis("left", "right")
 	var ver: float = Input.get_axis("up", "down")
@@ -64,17 +72,17 @@ func process_movement() -> bool:
 	
 	return false
 
-## Updates the movement cooldown and processes movement when input is allowed.
-##
-## The cooldown prevents held input from advancing more than one tile per
-## configured delay interval. The player can only act during its assigned turn,
-## and a successful input attempt advances the turn order.
 func _process(delta: float) -> void:
 	if (_key_delay > 0):
 		_key_delay -= delta
 		return
 	
 	if not TurnsManager.instance.is_my_turn(self):
+		return
+	
+	if not _path.is_empty():
+		process_path()
+		TurnsManager.instance.next_turn()
 		return
 	
 	if process_movement():

@@ -8,17 +8,11 @@
 extends Node2D
 class_name Enemy
 
-## Enables the default wandering behavior during this enemy's turn.
 @export var is_randomly_wandering: bool = true
 
-## Registers the enemy as a turn actor when the node enters the scene.
 func _ready() -> void:
 	TurnsManager.instance.register_actor(self)
 
-## Processes this enemy's movement behavior for the current turn.
-##
-## When wandering is enabled, the enemy picks a random offset in the range
-## `-1..1` for each axis and only moves if the destination tile is walkable.
 func process_movement() -> void:
 	if is_randomly_wandering:
 		var dx: int = randi() % 3 - 1
@@ -30,7 +24,6 @@ func process_movement() -> void:
 				position.y += dy * Config.tile_size.y
 		
 
-## Runs the enemy only on its assigned turn, then advances turn order.
 func _process(_delta: float) -> void:
 	if not TurnsManager.instance.is_my_turn(self):
 		return

@@ -1,23 +1,24 @@
 ## Developed by Camilo DelCódigo
 ##
-## Provides tile-based collision queries for world positions.
+## Exposes the blocking tile layer used by movement and pathfinding.
 ##
-## This node exposes a shared instance so other gameplay scripts can ask
-## whether a world-space position is occupied by a tile in this layer.
+## This tilemap acts as the gameplay collision source: if a cell in this
+## layer contains tile data, actors treat that tile as solid. The node also
+## builds the shared pathfinding grid from the same occupied cells.
 extends TileMapLayer
 class_name Map
 
-## Shared map reference used by gameplay systems such as Player.
 static var instance: Map
 
-## Registers this node as the shared map instance.
+var pathfinding: Pathfinding
+
 func _init() -> void:
 	instance = self
 
-## Returns whether the given world-space position lands on an occupied tile.
-##
-## The world coordinates are converted into tile coordinates using
-## Config.tile_size before querying this tilemap layer.
+func _ready() -> void:
+	pathfinding = Pathfinding.new(self)
+	pathfinding.update(get_used_rect())
+
 func is_solid(world_x: float, world_y: float) -> bool:
 	var tile_position: Vector2i = Vector2i(int(world_x / Config.tile_size.x), int(world_y / Config.tile_size.y))
 	var tile_data: TileData = get_cell_tile_data(tile_position)
