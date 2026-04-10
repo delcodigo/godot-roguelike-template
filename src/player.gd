@@ -4,9 +4,10 @@
 ##
 ## The player moves exactly one tile per accepted input using the tile size
 ## defined in Config. Movement into solid map tiles is blocked through the
-## shared Map instance. When both axes are pressed, horizontal input is
-## processed before vertical input. Any directional input consumes the player's
-## turn, even if the destination tile is blocked.
+## shared Map instance. The player can move horizontally, vertically, or diagonally
+## using the corresponding input actions. Diagonal movement requires that all three involved 
+## tiles (horizontal, vertical, and diagonal destination) are not solid. Any directional 
+## input, including blocked movement attempts, consumes the player's turn and triggers a movement cooldown.
 extends Node2D
 class_name Player
 
@@ -27,7 +28,7 @@ func _ready() -> void:
 func process_movement() -> bool:
 	var hor: float = Input.get_axis("left", "right")
 	var ver: float = Input.get_axis("up", "down")
-	
+
 	if hor != 0:
 		if not Map.instance.is_solid(position.x + hor * Config.tile_size.x, position.y):
 			position.x += hor * Config.tile_size.x
@@ -35,6 +36,28 @@ func process_movement() -> bool:
 		return true
 	elif ver != 0:
 		if not Map.instance.is_solid(position.x, position.y + ver * Config.tile_size.y):
+			position.y += ver * Config.tile_size.y
+		_key_delay = key_delay_seconds
+		return true
+	
+	if Input.is_action_pressed("upright"):
+		hor = 1
+		ver = -1
+	elif Input.is_action_pressed("downright"):
+		hor = 1
+		ver = 1
+	elif Input.is_action_pressed("downleft"):
+		hor = -1
+		ver = 1
+	elif Input.is_action_pressed("upleft"):
+		hor = -1
+		ver = -1
+	
+	if hor != 0 and ver != 0:
+		if not Map.instance.is_solid(position.x + hor * Config.tile_size.x, position.y) \
+		and not Map.instance.is_solid(position.x, position.y + ver * Config.tile_size.y) \
+		and not Map.instance.is_solid(position.x + hor * Config.tile_size.x, position.y + ver * Config.tile_size.y):
+			position.x += hor * Config.tile_size.x
 			position.y += ver * Config.tile_size.y
 		_key_delay = key_delay_seconds
 		return true
