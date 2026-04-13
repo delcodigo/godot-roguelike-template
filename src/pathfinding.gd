@@ -24,9 +24,16 @@ func update(region: Rect2i) -> void:
 			var id: Vector2i = Vector2i(x, y)
 			_astar.set_point_solid(id, _map.get_cell_tile_data(id) != null)
 
+func _is_out_of_bounds(tile: Vector2i) -> bool:
+	return tile.x < 0 or tile.y < 0 or tile.x >= _map.get_used_rect().size.x or tile.y >= _map.get_used_rect().size.y
+
 func find_path(from_world: Vector2, to_world: Vector2) -> Array[Vector2]:
-	var from_tile: Vector2i = Vector2i(int(from_world.x / Config.tile_size.x), int(from_world.y / Config.tile_size.y))
-	var to_tile: Vector2i = Vector2i(int(to_world.x / Config.tile_size.x), int(to_world.y / Config.tile_size.y))
+	var from_tile: Vector2i = Vector2i(floori(from_world.x / Config.tile_size.x), floori(from_world.y / Config.tile_size.y))
+	var to_tile: Vector2i = Vector2i(floori(to_world.x / Config.tile_size.x), floori(to_world.y / Config.tile_size.y))
+
+	if _is_out_of_bounds(from_tile) or _is_out_of_bounds(to_tile):
+		return []
+
 	var tile_path: PackedVector2Array = _astar.get_point_path(from_tile, to_tile)
 	var world_path: Array[Vector2] = []
 	for point: Vector2 in tile_path:

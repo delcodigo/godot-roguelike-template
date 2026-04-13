@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://jap2rhwctlhq"]
+
+[ext_resource type="Script" uid="uid://beutp4cvm7un2" path="res://src/ui_cursor_path.gd" id="1_ohveg"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_lxgcf"]
+size = Vector2(14, 20)
+center_offset = Vector3(7, 10, 0)
+
+[node name="UICursorPath" type="Node2D" unique_id=1219023966]
+script = ExtResource("1_ohveg")
+
+[node name="CursorMesh" type="MeshInstance2D" parent="." unique_id=324501561]
+modulate = Color(1, 1, 1, 0.5019608)
+mesh = SubResource("QuadMesh_lxgcf")

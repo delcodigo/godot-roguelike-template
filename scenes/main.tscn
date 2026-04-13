@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://cs08p70i746m8" path="res://src/turns_manager.gd" id="1_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://fc63bmvwcejh" path="res://entities/player.tscn" id="1_o5qli"]
 [ext_resource type="PackedScene" uid="uid://cxx2qmi7jtaxb" path="res://entities/enemy.tscn" id="3_sugp2"]
+[ext_resource type="PackedScene" uid="uid://jap2rhwctlhq" path="res://entities/ui/ui_cursor_path.tscn" id="5_tbgi4"]
 
 [node name="Main" type="Node2D" unique_id=1990881545]
 
@@ -22,3 +23,6 @@ position = Vector2(28, 40)
 
 [node name="Enemy" parent="." unique_id=1785776584 instance=ExtResource("3_sugp2")]
 position = Vector2(126, 300)
+
+[node name="UICursorPath" parent="." unique_id=1219023966 node_paths=PackedStringArray("player") instance=ExtResource("5_tbgi4")]
+player = NodePath("../Player")

@@ -19,7 +19,7 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		var mouse_event: InputEventMouseButton = event as InputEventMouseButton
-		if mouse_event.pressed and mouse_event.button_index == MOUSE_BUTTON_LEFT:
+		if mouse_event.pressed and mouse_event.button_index == MOUSE_BUTTON_LEFT and Config.enable_mouse_movement and _path.size() == 0:
 			var target: Vector2 = get_canvas_transform().affine_inverse() * mouse_event.position
 			var path: Array[Vector2] = Map.instance.pathfinding.find_path(position, target)
 			if path.size() > 1:
